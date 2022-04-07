@@ -6,11 +6,11 @@ import sys
 import shutil
 import os
 import errno
-
+from distutils.sysconfig import get_python_lib
 
 __author__ = "Dawid Deregowski deregowski.net"
 __copyright__ = "Copyright (c) %s - Dawid Deręgowski deregowski.net" % date.today().year
-__version__ = "1.0.2"
+__version__ = "1.0.3"
 
 """
 For clipboard copy/paste remote action ;-)
@@ -33,9 +33,8 @@ import pwd
 import getpass
 
 # check cfg
-
 copypastor_install_conf = "default_config.py"
-copypastor_install_dir = os.getcwd() + "/copypastor/" + "config/"
+copypastor_install_dir = get_python_lib() + "/copypastor/" + "config/"
 copypastor_install_config = copypastor_install_dir + copypastor_install_conf
 copypastor_install_init = copypastor_install_dir + "__init__.py"
 
@@ -48,7 +47,7 @@ copypastor_cfg_init = copypastor_cfg_dir + "__init__.py"
 # checking main app dirs
 
 if not os.path.exists(copypastor_cfg_dir):
-    print(f"Ups.. no config files! I'll restore from default in {copypastor_cfg_dir} \n")
+    print(f"Ups.. no config files! I'll copy from default to {copypastor_cfg_dir} \n")
     try:
         os.makedirs(copypastor_cfg_dir, exist_ok=True)
 
@@ -58,44 +57,45 @@ if not os.path.exists(copypastor_cfg_dir):
         print(f"\ncopypastor v{__version__} - bye bye.")
         sys.exit(1)
 
-# copy config files
+    # copy config files
 
-try:
-    files = os.listdir(copypastor_install_dir)
-    files.sort()
-
-except FileNotFoundError:
-    print(f"Copy config: source configs not found! Please check installation dir!")
-    print(f"\ncopypastor v{__version__} - bye bye.")
-    sys.exit(1)
-
-if not os.path.exists(copypastor_cfg):
     try:
-        shutil.copytree(copypastor_install_dir, copypastor_cfg_dir)
-    except OSError as exc:
-        if exc.errno == errno.ENOTDIR:
-            try:
-                shutil.copy(copypastor_install_config, copypastor_cfg)
-                shutil.copy(copypastor_install_init, copypastor_cfg_init)
-            except shutil.SameFileError:
-                print(f"Ok, {copypastor_cfg} exists, moving on.")
-            except Exception as details:
-                print(f"Copy config: copy dir/file error! {details}")
-                print(f"' '")
-        if exc.errno == errno.EEXIST:
-            try:
-                shutil.copy(copypastor_install_config, copypastor_cfg)
-                shutil.copy(copypastor_install_init, copypastor_cfg_init)
-            except shutil.SameFileError:
-                print(f"Ok, {copypastor_cfg} exists, moving on.")
-            except Exception as details:
-                print(f"Copy config: copy dir/file error! {details}")
-                print(f"' '")
-        else:
-            print(f"Couldn't copy configs! {exc}")
-            print(f"Please check this before installing again.")
-            print(f"\ncopypastor v{__version__} - bye bye.")
-            sys.exit(1)
+        files = os.listdir(copypastor_install_dir)
+        files.sort()
+
+    except FileNotFoundError:
+        print(f"Copy config: source configs not found in {copypastor_install_dir}! "
+              f"Please check package installation dir!")
+        print(f"\ncopypastor v{__version__} - bye bye.")
+        sys.exit(1)
+
+    if not os.path.exists(copypastor_cfg):
+        try:
+            shutil.copytree(copypastor_install_dir, copypastor_cfg_dir)
+        except OSError as exc:
+            if exc.errno == errno.ENOTDIR:
+                try:
+                    shutil.copy(copypastor_install_config, copypastor_cfg)
+                    shutil.copy(copypastor_install_init, copypastor_cfg_init)
+                except shutil.SameFileError:
+                    print(f"Ok, {copypastor_cfg} exists, moving on.")
+                except Exception as details:
+                    print(f"Copy config: copy dir/file error! {details}")
+                    print(f"' '")
+            if exc.errno == errno.EEXIST:
+                try:
+                    shutil.copy(copypastor_install_config, copypastor_cfg)
+                    shutil.copy(copypastor_install_init, copypastor_cfg_init)
+                except shutil.SameFileError:
+                    print(f"Ok, {copypastor_cfg} exists, moving on.")
+                except Exception as details:
+                    print(f"Copy config: copy dir/file error! {details}")
+                    print(f"' '")
+            else:
+                print(f"Couldn't copy configs! {exc}")
+                print(f"Please check this before installing again.")
+                print(f"\ncopypastor v{__version__} - bye bye.")
+                sys.exit(1)
 
 from .src.server import start_server
 from .src.server import start_silent_server
