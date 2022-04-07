@@ -29,8 +29,8 @@ if sys.version_info <= (3, 4):
 
 print(f"Checking copypastor requirements...")
 
-if os.path.isfile("./copypastor/requirements.txt"):
-    with open("./copypastor/requirements.txt") as f:
+if os.path.isfile("requirements.txt"):
+    with open("requirements.txt") as f:
         required = f.read().splitlines()
 else:
     print(f"NO requirements.txt file in install dir! Please check this before installation.")
