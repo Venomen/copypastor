@@ -7,7 +7,7 @@ from datetime import date
 
 __author__ = "Dawid Deregowski deregowski.net"
 __copyright__ = "Copyright (c) %s - Dawid Deręgowski deregowski.net" % date.today().year
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 try:
     from pynput import keyboard
