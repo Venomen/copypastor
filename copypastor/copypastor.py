@@ -10,7 +10,7 @@ from distutils.sysconfig import get_python_lib
 
 __author__ = "Dawid Deregowski deregowski.net"
 __copyright__ = "Copyright (c) %s - Dawid Deręgowski deregowski.net" % date.today().year
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 """
 For clipboard copy/paste remote action ;-)
@@ -37,12 +37,14 @@ copypastor_install_conf = "default_config.py"
 copypastor_install_dir = get_python_lib() + "/copypastor/" + "config/"
 copypastor_install_config = copypastor_install_dir + copypastor_install_conf
 copypastor_install_init = copypastor_install_dir + "__init__.py"
+clipboard_file_install = copypastor_install_dir + "clipboard.py"
 
 current_user = getpass.getuser()
 copypastor_conf = "config.py"
 copypastor_cfg_dir = pwd.getpwnam(current_user).pw_dir + "/.config/copypastor/"
 copypastor_cfg = copypastor_cfg_dir + copypastor_conf
 copypastor_cfg_init = copypastor_cfg_dir + "__init__.py"
+clipboard_file = copypastor_cfg_dir + "clipboard.py"
 
 # checking main app dirs
 
@@ -77,6 +79,7 @@ if not os.path.exists(copypastor_cfg_dir):
                 try:
                     shutil.copy(copypastor_install_config, copypastor_cfg)
                     shutil.copy(copypastor_install_init, copypastor_cfg_init)
+                    shutil.copy(clipboard_file_install, clipboard_file)
                 except shutil.SameFileError:
                     print(f"Ok, {copypastor_cfg} exists, moving on.")
                 except Exception as details:
@@ -86,6 +89,7 @@ if not os.path.exists(copypastor_cfg_dir):
                 try:
                     shutil.copy(copypastor_install_config, copypastor_cfg)
                     shutil.copy(copypastor_install_init, copypastor_cfg_init)
+                    shutil.copy(clipboard_file_install, clipboard_file)
                 except shutil.SameFileError:
                     print(f"Ok, {copypastor_cfg} exists, moving on.")
                 except Exception as details:
@@ -98,7 +102,9 @@ if not os.path.exists(copypastor_cfg_dir):
                 sys.exit(1)
 
 from .src.server import start_server
+from .src.server import start_cf_server
 from .src.server import start_silent_server
+from .src.server import start_silent_cf_server
 from .src.client import start_client
 from .src.client import start_silent_client
 
@@ -132,6 +138,10 @@ def on_press(key):
         current_server.add(key)
         if any(all(k in current_server for k in COMBO) for COMBO in ACTIVATE_SERVER):
             start_server()
+    if any([key in COMBO for COMBO in ACTIVATE_FILE_SERVER]):
+        current_server.add(key)
+        if any(all(k in current_server for k in COMBO) for COMBO in ACTIVATE_FILE_SERVER):
+            start_cf_server()
 
 
 def on_press_silent(key):
@@ -143,12 +153,18 @@ def on_press_silent(key):
         current_server.add(key)
         if any(all(k in current_server for k in COMBO) for COMBO in ACTIVATE_SERVER):
             start_silent_server()
+    if any([key in COMBO for COMBO in ACTIVATE_FILE_SERVER]):
+        current_server.add(key)
+        if any(all(k in current_server for k in COMBO) for COMBO in ACTIVATE_FILE_SERVER):
+            start_silent_cf_server()
 
 
 def on_release(key):
     if any([key in COMBO for COMBO in ACTIVATE_CLIENT]):
         current_client.remove(key)
     if any([key in COMBO for COMBO in ACTIVATE_SERVER]):
+        current_server.remove(key)
+    if any([key in COMBO for COMBO in ACTIVATE_FILE_SERVER]):
         current_server.remove(key)
 
 
@@ -181,6 +197,7 @@ def start():
                 parser.add_argument("--version", nargs="?", help="current version & authors")
                 parser.add_argument("--debug", nargs="?", help="get more details")
                 parser.add_argument("--server", nargs="?", help="run server mode only")
+                parser.add_argument("--file-server", nargs="?", help="run server mode only - local file clipboard")
                 parser.add_argument("--client", nargs="?", help="run client mode only")
                 parser.parse_args()
                 sys.exit(0)
@@ -213,11 +230,24 @@ def start():
                     print(" EXIT: Ctrl+C pressed, bye bye.")
                     sys.exit(1)
 
+            if argv[1] == "--file-server":
+                try:
+                    print(emoji.emojize(":spaghetti: Starting copypastor [Server Mode Only] \n"
+                                        "Press CTRL+C to Exit. Use without '--file-server' for default mode, "
+                                        "'--help' for help."))
+                    while True:
+                        start_silent_cf_server()
+
+                except KeyboardInterrupt:
+                    print(" EXIT: Ctrl+C pressed, bye bye.")
+                    sys.exit(1)
+
             if argv[1] == "--debug":
                 try:
                     print(emoji.emojize(":spaghetti: Starting copypastor [Debug] \n"
                                         "Press key 'C' to run a client-mode, key 'S' to run a server-mode, "
-                                        "or 'CTRL+C' to Exit. \n"
+                                        "or 'F' for file-server mode, "
+                                        "or 'CTRL+C' to Exit,  \n"
                                         "Use without '--debug' for silent mode, '--help' for help."))
                     while True:
                         start_key_listen()
@@ -227,7 +257,7 @@ def start():
                     sys.exit(1)
 
             print(emoji.emojize(":spaghetti: ERROR: Bad params! \n"
-                                "Please provide (or leave empty): --server --client --help --debug --version "))
+                                "Please provide (or leave empty): --server --file --client --help --debug --version "))
             sys.exit(1)
     except IndexError:
         pass
@@ -236,6 +266,7 @@ def start():
         try:
             print(emoji.emojize(":spaghetti: Starting copypastor \n"
                                 "Press key 'C' to run client-mode, key 'S' to run a server-mode, "
+                                "or 'F' for file-server mode, "
                                 "or 'CTRL+C' to Exit. \n "
                                 "Use '--debug' for detailed mode, '--help' for help.  "))
             while True:

@@ -6,7 +6,7 @@ from datetime import date
 
 __author__ = "Dawid Deregowski deregowski.net"
 __copyright__ = "Copyright (c) %s - Dawid Deręgowski deregowski.net" % date.today().year
-__version__ = "1.0.3"
+__version__ = "1.0.4"
 
 """
 For clipboard copy/paste remote action ;-)
@@ -51,16 +51,61 @@ def start_server():
     try:
         data = connection.recv(16)
         print("-- Connection from", client_address)
+
+        # copying from remote clipboard
         try:
             data2 = bytes(get_clipboard(), encoding='utf8')
             if data == auth_key and data2:
-                print("-- Access Granted.")
-                print("-- Sending data back to the client...")
+                print("-- System-clipboard: Access Granted.")
+                print("-- System-clipboard: Sending data back to the client...")
                 connection.sendall(data2)
             else:
                 print("-- ERROR: No clip data or bad auth key!", client_address)
         except TypeError:
             print("-- ERROR: Ups, clipboard is broken. Maybe 'export DISPLAY'?")
+
+    finally:
+        # Clean up the connection
+        connection.shutdown(1)
+        connection.close()
+        print("-- Bye Bye.")
+
+
+def start_cf_server():
+    server_address = (SERVER_HOST, SERVER_PORT)
+    auth_key = bytes(AUTH_KEY, encoding='utf8')
+    print("\n Server Mode Activated (local file clipboard mode) - Host: %s Port: %s" % (SERVER_HOST, SERVER_PORT))
+
+    # Create a TCP/IP socket
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    # Bind the socket to the port
+    print("Starting up Server on {} port {}".format(*server_address))
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(server_address)
+
+    # Listen for incoming connections
+    sock.listen(1)
+
+    # Wait for a connection
+    print("- Waiting for a connection...")
+    connection, client_address = sock.accept()
+    try:
+        data = connection.recv(16)
+        print("-- Connection from", client_address)
+
+        # copying from local file-clipboard
+        try:
+            with open(clipboard_file, "rb") as cf:
+                cf = cf.read()
+                if data == auth_key and cf:
+                    print("-- File-clipboard: Access Granted.")
+                    print("-- File-clipboard: Sending data back to the client...")
+                    connection.sendall(cf)
+                else:
+                    print("-- ERROR: No clip data or bad auth key!", client_address)
+        except FileNotFoundError:
+            print("-- ERROR: Ups, clipboard local file does not exists!", clipboard_file)
     finally:
         # Clean up the connection
         connection.shutdown(1)
@@ -79,6 +124,8 @@ def start_silent_server():
     connection, client_address = sock.accept()
     try:
         data = connection.recv(16)
+
+        # copying from remote clipboard
         try:
             data2 = bytes(get_clipboard(), encoding='utf8')
             if data == auth_key and data2:
@@ -87,6 +134,33 @@ def start_silent_server():
                 print("-- ERROR: No clip data or bad auth key!", client_address)
         except TypeError:
             print("-- ERROR: Ups, clipboard is broken. Maybe 'export DISPLAY'?")
+    finally:
+        connection.shutdown(1)
+        connection.close()
+
+
+def start_silent_cf_server():
+    server_address = (SERVER_HOST, SERVER_PORT)
+    auth_key = bytes(AUTH_KEY, encoding='utf8')
+    print("\n Server Mode Activated (local file clipboard mode) - Host: %s Port: %s" % (SERVER_HOST, SERVER_PORT))
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(server_address)
+    sock.listen(1)
+    connection, client_address = sock.accept()
+    try:
+        data = connection.recv(16)
+
+        # copying from local file-clipboard
+        try:
+            with open(clipboard_file, "rb") as cf:
+                cf = cf.read()
+                if data == auth_key and cf:
+                    connection.sendall(cf)
+                else:
+                    print("-- ERROR: No clip data or bad auth key!", client_address)
+        except FileNotFoundError:
+            print("-- ERROR: Ups, clipboard local file does not exists!", clipboard_file)
     finally:
         connection.shutdown(1)
         connection.close()
