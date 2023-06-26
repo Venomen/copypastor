@@ -38,12 +38,14 @@ This is standard *python* config, you can change there things like:
 - SERVER_HOST
 - REMOTE_PORT
 - REMOTE_HOST
+- clipboard_file (default: ${USER}/.config/copypastor/clipboard.py)
 - AUTH_KEY (currently not ciphered)
 ```
 and also key bindings:
 ```
 - ACTIVATE_CLIENT -> KeyCode(char='c') -> to some other [key combination is allowed]
 - ACTIVATE_SERVER -> KeyCode(char='s') -> to some other [key combination is allowed]
+- ACTIVATE_FILE_SERVER -> KeyCode(char='f') -> to some other [key combination is allowed]
 ```
 ## Deployment (CLI usage)
 
@@ -53,6 +55,7 @@ One important thing to remember: **you need to start it where your X's are** *(o
 
 - `copypastor` - running default mode, you can choose between client/server mode by (default) keys **'C'** or **'S'**  
 - `copypastor --server` - server mode only, listening on port and waiting for connection
+- `copypastor --file-server` - server mode only for local file clipboard, listening on port and waiting for connection
 - `copypastor --client` - client mode only, connecting to specified host (*$HOME/.config/copypastor/config.py*)
 - `copypastor --debug` - just like default but with more CLI info
 - `copypastor --help` - not important at all ;)
