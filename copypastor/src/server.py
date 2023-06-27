@@ -49,7 +49,7 @@ def start_server():
     print("- Waiting for a connection...")
     connection, client_address = sock.accept()
     try:
-        data = connection.recv(16)
+        data = connection.recv(4096)
         print("-- Connection from", client_address)
 
         # copying from remote clipboard
@@ -91,7 +91,7 @@ def start_cf_server():
     print("- Waiting for a connection...")
     connection, client_address = sock.accept()
     try:
-        data = connection.recv(16)
+        data = connection.recv(4096)
         print("-- Connection from", client_address)
 
         # copying from local file-clipboard
@@ -123,7 +123,7 @@ def start_silent_server():
     sock.listen(1)
     connection, client_address = sock.accept()
     try:
-        data = connection.recv(16)
+        data = connection.recv(4096)
 
         # copying from remote clipboard
         try:
@@ -149,7 +149,7 @@ def start_silent_cf_server():
     sock.listen(1)
     connection, client_address = sock.accept()
     try:
-        data = connection.recv(16)
+        data = connection.recv(4096)
 
         # copying from local file-clipboard
         try:
