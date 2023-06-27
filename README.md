@@ -92,6 +92,7 @@ OR (even better, extremely ergonomic):
 2. **Threads** for app modes (so you could easy change it while running)
 3. **Pathlib** for in-place paths instead current import construction
 4. Securing secrets (connection token)
+5. Method for sending also binary content (currently only text-mode allowed due to utf-8 decoding)
 
 ## Contributing
 
