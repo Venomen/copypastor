@@ -46,7 +46,12 @@ def start_client():
         message = bytes(AUTH_KEY, encoding='utf8')
         print("-- Sending auth:", codecs.decode(message))
         sock.sendall(message)
-        data = sock.recv(999)  # set max clip space
+        data = b""
+        while True:
+            chunk = sock.recv(4096)
+            if not chunk:
+                break
+            data += chunk
         print("-- Received clipboard:", codecs.decode(data))
         if data:
             try:
@@ -72,7 +77,12 @@ def start_silent_client():
         sock.connect(server_address)
         message = bytes(AUTH_KEY, encoding='utf8')
         sock.sendall(message)
-        data = sock.recv(999)  # set max clip space
+        data = b""
+        while True:
+            chunk = sock.recv(4096)
+            if not chunk:
+                break
+            data += chunk
         if data:
             try:
                 pyperclip.copy(codecs.decode(data))
