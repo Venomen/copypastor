@@ -2,7 +2,6 @@
 # -*- encoding: utf-8 -*-
 
 import sys
-import clipboard
 import os
 from datetime import date
 
@@ -19,16 +18,16 @@ import getpass
 import socket
 import codecs
 import pyperclip
+import clipboard
+
 
 # Local user config file/dir
-
 copypastor_conf = "config.py"
 current_user = getpass.getuser()
 copypastor_cfg_dir = pwd.getpwnam(current_user).pw_dir + "/.config/copypastor/"
 copypastor_cfg = copypastor_cfg_dir + copypastor_conf
 
 # Importing config outside app, from user home dir
-
 sys.path.insert(1, copypastor_cfg_dir)
 from config import *
 
@@ -87,6 +86,7 @@ def start_silent_client():
             data += chunk
         if data:
             try:
+
                 tmp_file = copypastor_cfg_dir + 'tmp.png'
                 with open(tmp_file, 'wb') as file:
                     file.write(data)

@@ -156,6 +156,7 @@ def start_silent_cf_server():
             with open(clipboard_file, "rb") as cf:
                 cf = cf.read()
                 if data == auth_key and cf:
+                    print(type(cf))
                     connection.sendall(cf)
                 else:
                     print("-- ERROR: No clip data or bad auth key!", client_address)
