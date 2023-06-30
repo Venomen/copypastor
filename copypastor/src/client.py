@@ -2,6 +2,8 @@
 # -*- encoding: utf-8 -*-
 
 import sys
+import clipboard
+import os
 from datetime import date
 
 __author__ = "Dawid Deregowski deregowski.net"
@@ -85,7 +87,14 @@ def start_silent_client():
             data += chunk
         if data:
             try:
-                pyperclip.copy(codecs.decode(data))
+                tmp_file = copypastor_cfg_dir + 'tmp.png'
+                with open(tmp_file, 'wb') as file:
+                    file.write(data)
+                with open(tmp_file, 'rb') as file:
+                    binary_content = file.read()
+                clipboard.copy(binary_content)
+                os.remove(tmp_file)
+
             except pyperclip.PyperclipException:
                 print("-- ERROR: Couldn't copy clipboard data.")
         else:

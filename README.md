@@ -38,7 +38,7 @@ This is standard *python* config, you can change there things like:
 - SERVER_HOST
 - REMOTE_PORT
 - REMOTE_HOST
-- clipboard_file (default: ${USER}/.config/copypastor/clipboard.py)
+- clipboard_file (default: ${USER}/.config/copypastor/clip_file.py)
 - AUTH_KEY (currently not ciphered)
 ```
 and also key bindings:

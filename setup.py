@@ -43,14 +43,14 @@ copypastor_install_conf = "default_config.py"
 copypastor_install_dir = os.getcwd() + "/copypastor/" + "config/"
 copypastor_install_config = copypastor_install_dir + copypastor_install_conf
 copypastor_install_init = copypastor_install_dir + "__init__.py"
-clipboard_file_install = copypastor_install_dir + "clipboard.py"
+clipboard_file_install = copypastor_install_dir + "clip_file.py"
 
 current_user = getpass.getuser()
 copypastor_conf = "config.py"
 copypastor_cfg_dir = pwd.getpwnam(current_user).pw_dir + "/.config/copypastor/"
 copypastor_cfg = copypastor_cfg_dir + copypastor_conf
 copypastor_cfg_init = copypastor_cfg_dir + "__init__.py"
-clipboard_file = copypastor_cfg_dir + "clipboard.py"
+clipboard_file = copypastor_cfg_dir + "clip_file.py"
 
 # test if user and installation dirs exists
 

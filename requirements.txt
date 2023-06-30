@@ -1,3 +1,4 @@
 emoji==1.6.3
 pyperclip==1.8.2
 pynput==1.7.6
+clipboard==0.0.4
